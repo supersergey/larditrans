@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="Lardi-Trans:war">
     <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="Phone book.war">
+    <root id="archive" name="Phone-book-1.0-SNAPSHOT.war">
       <element id="artifact" artifact-name="Lardi-Trans:war exploded" />
     </root>
   </artifact>

@@ -1,6 +1,7 @@
 package com.larditrans.DAO;
 
 import com.larditrans.DAO.model.Entry;
+import com.larditrans.DAO.model.User;
 
 import java.util.List;
 
@@ -11,5 +12,5 @@ public interface EntryDao {
     void add(Entry entry);
     void delete(Entry entry);
     void update(Entry entry);
-    List<Entry> getAll();
+    List<Entry> getAll(User owner);
 }

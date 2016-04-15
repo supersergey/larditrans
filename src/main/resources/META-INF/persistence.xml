@@ -3,7 +3,7 @@
     <persistence-unit name="LardiTransJPA" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
-            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.show_sql" value="true" />
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/larditrans"/>
             <property name="javax.persistence.jdbc.user" value="root" />
