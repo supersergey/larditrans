@@ -15,14 +15,8 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("java.larditrans")
+@ComponentScan("com.larditrans")
 public class AppConfig extends WebMvcConfigurerAdapter {
-
-//    @Bean
-//    public EntityManager entityManager() {
-//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("LardiTransJPA");
-//        return emf.createEntityManager();
-//    }
 
     @Bean
     public UrlBasedViewResolver setupViewResolver() {

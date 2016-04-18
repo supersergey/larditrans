@@ -1,19 +1,15 @@
 package com.larditrans.dao;
 
 import com.larditrans.AppConfig;
-import com.larditrans.PersistenceJPAConfig;
 import com.larditrans.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.junit.Assert.*;
 
@@ -21,15 +17,13 @@ import static org.junit.Assert.*;
  * Created by sergey on 15.04.2016.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(PersistenceJPAConfig.class)
-@ContextConfiguration(classes = { PersistenceJPAConfig.class, AppConfig.class}, loader = AnnotationConfigContextLoader.class)
-@EnableWebMvc
+@SpringApplicationConfiguration(AppConfig.class)
 @Transactional
-@EnableAutoConfiguration
-public class UserDaoImplDBTest {
+@WebAppConfiguration
+public class UserDaoImplDbTest {
 
     @Autowired
-    @Qualifier("userDaoImplDB")
+    @Qualifier("userDaoImplDb")
     private UserDao userDao;
 
     private User testUser = new User("test", "test", "Test Test");

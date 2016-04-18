@@ -18,7 +18,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableTransactionManagement
-@ComponentScan("java.larditrans")
+@ComponentScan("com.larditrans")
 public class PersistenceJPAConfig{
 
     public PersistenceJPAConfig() {

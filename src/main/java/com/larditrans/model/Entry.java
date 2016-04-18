@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Entity
 public class Entry {
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private Long id;
 
     @Column(nullable = false)
     private String lastName;
@@ -124,7 +124,7 @@ public class Entry {
 
         Entry entry = (Entry) o;
 
-        if (id != entry.id) return false;
+        if (!id.equals(entry.id)) return false;
         if (!lastName.equals(entry.lastName)) return false;
         if (!firstName.equals(entry.firstName)) return false;
         if (!patronymic.equals(entry.patronymic)) return false;
@@ -132,21 +132,19 @@ public class Entry {
         if (!phoneNumber.equals(entry.phoneNumber)) return false;
         if (!address.equals(entry.address)) return false;
         if (!email.equals(entry.email)) return false;
-        return owner.equals(entry.owner);
+        return !(owner != null ? !owner.equals(entry.owner) : entry.owner != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + lastName.hashCode();
+        int result = 31 + lastName.hashCode();
         result = 31 * result + firstName.hashCode();
         result = 31 * result + patronymic.hashCode();
         result = 31 * result + cellNumber.hashCode();
         result = 31 * result + phoneNumber.hashCode();
         result = 31 * result + address.hashCode();
         result = 31 * result + email.hashCode();
-        result = 31 * result + owner.hashCode();
         return result;
     }
 }

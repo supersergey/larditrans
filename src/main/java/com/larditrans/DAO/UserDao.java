@@ -1,9 +1,6 @@
 package com.larditrans.dao;
 
 import com.larditrans.model.User;
-import org.hibernate.sql.Update;
-
-import java.util.List;
 
 /**
  * Created by sergey on 14.04.2016.

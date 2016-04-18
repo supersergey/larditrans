@@ -2,7 +2,9 @@ package com.larditrans.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by sergey on 14.04.2016.
@@ -11,8 +13,8 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String login;
@@ -24,7 +26,7 @@ public class User {
     private String fullName;
     
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Entry> entries = new HashSet<>();
+    private Set<Entry> entries = new LinkedHashSet<>();
 
     public long getId() {
         return id;
@@ -82,21 +84,17 @@ public class User {
 
         User user = (User) o;
 
-        if (id != user.id) return false;
+        if (!id.equals(user.id)) return false;
         if (!login.equals(user.login)) return false;
         if (!password.equals(user.password)) return false;
         if (!fullName.equals(user.fullName)) return false;
-        return entries.equals(user.entries);
+        return !(entries != null ? !entries.equals(user.entries) : user.entries != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + login.hashCode();
-        result = 31 * result + password.hashCode();
-        result = 31 * result + fullName.hashCode();
-        result = 31 * result + entries.hashCode();
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
+
 }

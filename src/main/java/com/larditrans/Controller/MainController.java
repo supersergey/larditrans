@@ -1,14 +1,11 @@
 package com.larditrans.controller;
 
-import com.larditrans.dao.EntryDao;
-import com.larditrans.model.Entry;
+import com.larditrans.dao.UserDao;
 import com.larditrans.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.util.List;
 
 /**
  * Created by sergey on 14.04.2016.
@@ -16,9 +13,16 @@ import java.util.List;
 @Controller("mainController")
 public class MainController {
 
-//    @Autowired
-//    private EntryDao entryDao;
-//
+    @Autowired
+    @Qualifier("userDaoImplDb")
+    private UserDao userDao;
+
+    @RequestMapping("/add")
+    public void add()
+    {
+        userDao.add(new User("Вася", "Пупкин", "дурак"));
+    }
+
 //    @RequestMapping("/viewEntries")
 //    public ModelAndView viewEntries()
 //    {

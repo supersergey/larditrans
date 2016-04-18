@@ -23,6 +23,13 @@
         <processorPath useClasspath="true" />
         <module name="Lardi-Trans" />
       </profile>
+      <profile default="false" name="Annotation profile for lardi-trans" enabled="true">
+        <sourceOutputDir name="target\generated-sources\annotations" />
+        <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="lardi-trans" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
       <module name="lardi-trans" target="1.7" />

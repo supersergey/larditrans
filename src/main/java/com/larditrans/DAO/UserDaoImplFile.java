@@ -4,12 +4,9 @@ import com.google.gson.Gson;
 import com.larditrans.model.User;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
