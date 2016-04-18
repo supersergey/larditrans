@@ -1,13 +1,10 @@
 package com.larditrans.service;
 
-import com.larditrans.dao.EntryDao;
 import com.larditrans.dao.UserDao;
 import com.larditrans.model.Entry;
 import com.larditrans.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,9 +14,6 @@ public class UserService {
 
     @Autowired
     private UserDao userDao;
-
-    @Autowired
-    private EntryDao entryDao;
 
     public User addEntry(String userLogin, Entry entry) {
         User currentUser = userDao.getByLogin(userLogin);

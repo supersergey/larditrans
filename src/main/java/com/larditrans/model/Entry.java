@@ -116,4 +116,37 @@ public class Entry {
 
     public Entry() {
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Entry entry = (Entry) o;
+
+        if (id != entry.id) return false;
+        if (!lastName.equals(entry.lastName)) return false;
+        if (!firstName.equals(entry.firstName)) return false;
+        if (!patronymic.equals(entry.patronymic)) return false;
+        if (!cellNumber.equals(entry.cellNumber)) return false;
+        if (!phoneNumber.equals(entry.phoneNumber)) return false;
+        if (!address.equals(entry.address)) return false;
+        if (!email.equals(entry.email)) return false;
+        return owner.equals(entry.owner);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + patronymic.hashCode();
+        result = 31 * result + cellNumber.hashCode();
+        result = 31 * result + phoneNumber.hashCode();
+        result = 31 * result + address.hashCode();
+        result = 31 * result + email.hashCode();
+        result = 31 * result + owner.hashCode();
+        return result;
+    }
 }

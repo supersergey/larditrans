@@ -1,22 +1,19 @@
 package com.larditrans.dao;
 
 import com.larditrans.AppConfig;
-import com.larditrans.model.Entry;
+import com.larditrans.PersistenceJPAConfig;
 import com.larditrans.model.User;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-
-import javax.transaction.Transactional;
-import java.util.LinkedList;
-import java.util.List;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.junit.Assert.*;
 
@@ -24,8 +21,11 @@ import static org.junit.Assert.*;
  * Created by sergey on 15.04.2016.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(AppConfig.class)
-@WebAppConfiguration
+@SpringApplicationConfiguration(PersistenceJPAConfig.class)
+@ContextConfiguration(classes = { PersistenceJPAConfig.class, AppConfig.class}, loader = AnnotationConfigContextLoader.class)
+@EnableWebMvc
+@Transactional
+@EnableAutoConfiguration
 public class UserDaoImplDBTest {
 
     @Autowired
