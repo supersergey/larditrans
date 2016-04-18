@@ -25,6 +25,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
+      <module name="lardi-trans" target="1.7" />
       <module name="Lardi-Trans" target="1.7" />
     </bytecodeTargetLevel>
   </component>

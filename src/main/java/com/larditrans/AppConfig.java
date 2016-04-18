@@ -1,19 +1,20 @@
 package com.larditrans;
 
-import com.larditrans.DAO.EntryDao;
-import com.larditrans.DAO.EntryDaoImplDB;
-import com.larditrans.DAO.UserDao;
-import com.larditrans.DAO.UserDaoImplDB;
+import com.larditrans.dao.EntryDao;
+import com.larditrans.dao.EntryDaoImplDB;
+import com.larditrans.dao.UserDao;
+import com.larditrans.dao.UserDaoImplDB;
+import com.larditrans.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
+import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -32,7 +33,6 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         return emf.createEntityManager();
     }
 
-
     @Bean
     public UserDao userDao() {
         return new UserDaoImplDB();
@@ -41,6 +41,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public EntryDao entryDao() {
         return new EntryDaoImplDB();
+    }
+
+    @Bean
+    public UserService userService()
+    {
+        return new UserService();
     }
 
     @Bean
@@ -55,7 +61,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("**").addResourceLocations("WEB-INF/pages/static/examples/");
+        registry.addResourceHandler("**").addResourceLocations("WEB-INF/pages/static/");
     }
 }
 

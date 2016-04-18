@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Lardi-Trans.iml" filepath="$PROJECT_DIR$/Lardi-Trans.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lardi-trans.iml" filepath="$PROJECT_DIR$/lardi-trans.iml" />
     </modules>
   </component>
 </project>

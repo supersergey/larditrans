@@ -1,11 +1,13 @@
-package com.larditrans.DAO;
+package com.larditrans.dao;
 
-import com.larditrans.DAO.model.Entry;
-import com.larditrans.DAO.model.User;
+import com.larditrans.model.Entry;
+import com.larditrans.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -19,18 +21,38 @@ public class EntryDaoImplDB implements EntryDao {
     private EntityManager entityManager;
 
     @Override
-    public void add(Entry entry) {
+    public Entry add(User user, Entry entry) {
+        entry.setOwner(user);
+        EntityTransaction et = entityManager.getTransaction();
+        et.begin();
+        entityManager.persist(entry);
+        et.commit();
+        return entry;
+    }
 
+    @Override
+    public Entry get(long id) {
+        final Query query = entityManager.createQuery("SELECT e FROM Entry e where e.owner.id = :id", Entry.class);
+        query.setParameter("id", id);
+        return (Entry) query.getSingleResult();
     }
 
     @Override
     public void delete(Entry entry) {
-
+        EntityTransaction et = entityManager.getTransaction();
+        et.begin();
+        entityManager.remove(entry);
+        et.commit();
     }
 
     @Override
-    public void update(Entry entry) {
-
+    public Entry update(User user, Entry entry) {
+        entry.setOwner(user);
+        EntityTransaction et = entityManager.getTransaction();
+        et.begin();
+        Entry updatedEntry = entityManager.merge(entry);
+        et.commit();
+        return updatedEntry;
     }
 
     @Override

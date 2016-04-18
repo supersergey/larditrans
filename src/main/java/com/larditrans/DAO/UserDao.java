@@ -1,6 +1,7 @@
-package com.larditrans.DAO;
+package com.larditrans.dao;
 
-import com.larditrans.DAO.model.User;
+import com.larditrans.model.User;
+import org.hibernate.sql.Update;
 
 import java.util.List;
 
@@ -8,8 +9,8 @@ import java.util.List;
  * Created by sergey on 14.04.2016.
  */
 public interface UserDao {
-    void add(User user);
+    User add(User user);
     void delete(User user);
-    void update(User user);
-    List<User> getAll();
+    User update(User user);
+    User getByLogin(String login);
 }
