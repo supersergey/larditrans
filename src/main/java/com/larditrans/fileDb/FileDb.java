@@ -1,7 +1,9 @@
 package com.larditrans.fileDb;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.larditrans.model.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -14,51 +16,55 @@ import java.util.*;
  */
 @Service
 public class FileDb {
-    private static FileDb ourInstance = new FileDb();
 
-    public static FileDb getInstance() {
-        return ourInstance;
+    @Value("${filedb.path}")
+    private String fileDbPath;
+    private static final String userDbFilePath = "/user_%s.json";
+    private static final Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+    public boolean exists(String userLogin) {
+        return new File(String.format(fileDbPath + userDbFilePath, userLogin)).exists();
     }
 
-    private FileDb() {
+    public User readFromFile(String userLogin) throws IOException {
+
+        if (exists((userLogin))) {
+            RandomAccessFile raf = new RandomAccessFile(String.format(fileDbPath + userDbFilePath, userLogin), "r");
+            byte[] buf = new byte[(int) raf.length()];
+            raf.read(buf, 0, (int) raf.length());
+            raf.close();
+            String jsonString = new String(buf, "UTF-8");
+
+            User user = gson.fromJson(jsonString, User.class);
+            user.setId(0);
+            return user;
+        } else
+            return null;
     }
 
-    public static Map<String, User> users = new HashMap<>();
-    private static final String userDbFilePath = "g:/userdb%s.json";
-    private static final Gson gson = new Gson();
+    public void writeToFile(User user) throws IOException {
+        File f = new File(fileDbPath);
+        if (!f.exists())
+            f.mkdir();
 
-    private void readFromFile(String userLogin) throws IOException {
-        RandomAccessFile f = new RandomAccessFile(String.format(userDbFilePath, userLogin), "r");
-        byte[] buf = new byte[(int) f.length()];
-        f.read(buf, 0, (int) f.length());
-        f.close();
-
-        String jsonString = new String(buf, "UTF-8");
-
-        User[] usersArray = gson.fromJson(jsonString, User[].class);
-        List<User> userList = new LinkedList<>(Arrays.asList(usersArray));
-        for (User u : userList)
-            users.put(u.getLogin(), u);
-    }
-
-    private void writeToFile(String userLogin) throws IOException {
-        File f = new File(String.format(userDbFilePath, userLogin));
+        f = new File(String.format(fileDbPath + userDbFilePath, user.getLogin()));
         if (f.exists())
             f.delete();
 
         RandomAccessFile raf = new RandomAccessFile(f, "rw");
-        List<User> userList = new LinkedList<>(users.values());
-        User[] usersArray = new User[userList.size()];
-        usersArray = userList.toArray(usersArray);
 
-        String jsonString = gson.toJson(usersArray);
+        user.setId(0);
+        String jsonString = gson.toJson(user, user.getClass());
         byte[] buf = jsonString.getBytes("UTF-8");
         raf.write(buf);
         raf.close();
     }
 
-    public User getUserByLogin(String userLogin)
+    public void deleteFile(User user)
     {
-        return users.get(userLogin);
+        File f = new File(String.format(fileDbPath + userDbFilePath, user.getLogin()));
+        if (!f.exists())
+            throw new IllegalArgumentException("User not found. = " + user.getLogin());
+        f.delete();
     }
 }

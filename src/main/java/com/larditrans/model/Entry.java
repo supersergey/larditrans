@@ -1,5 +1,7 @@
 package com.larditrans.model;
 
+import com.google.gson.annotations.Expose;
+
 import javax.persistence.*;
 
 /**
@@ -11,22 +13,29 @@ public class Entry {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
+    @Expose
     @Column(nullable = false)
     private String lastName;
 
+    @Expose
     @Column(nullable = false)
     private String firstName;
 
+    @Expose
     @Column(nullable = false)
     private String patronymic;
 
-    @Column(nullable = false)
+    @Expose
+    @Column(unique = true, nullable = false)
     private String cellNumber;
 
+    @Expose
     private String phoneNumber;
 
+    @Expose
     private String address;
 
+    @Expose
     private String email;
 
     @ManyToOne

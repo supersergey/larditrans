@@ -1,5 +1,7 @@
 package com.larditrans.model;
 
+import com.google.gson.annotations.Expose;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -16,15 +18,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
+    @Expose
     @Column(nullable = false, unique = true)
     private String login;
 
+    @Expose
     @Column(nullable = false)
     private String password;
 
+    @Expose
     @Column(nullable = false)
     private String fullName;
-    
+
+    @Expose
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Entry> entries = new LinkedHashSet<>();
 

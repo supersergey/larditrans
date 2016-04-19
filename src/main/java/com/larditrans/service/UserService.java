@@ -1,6 +1,7 @@
 package com.larditrans.service;
 
 import com.larditrans.dao.UserDao;
+import com.larditrans.dao.UserDaoImplFile;
 import com.larditrans.model.Entry;
 import com.larditrans.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,10 @@ public class UserService {
 
         entry.setOwner(currentUser);
         currentUser.getEntries().add(entry);
+
+        if (userDao instanceof UserDaoImplFile)
+            userDao.update(currentUser);
+
         return currentUser;
     }
 
@@ -65,12 +70,14 @@ public class UserService {
             throw new IllegalArgumentException("The user has no entries. Nothing to update.");
 
         for (Entry e : entries)
-            if (e.getId() == newEntry.getId()) {
+            if (e.getCellNumber().equals(newEntry.getCellNumber())) {
                 changeEntry = e;
                 break;
             }
         currentUser.getEntries().remove(changeEntry);
         currentUser.getEntries().add(newEntry);
+        if (userDao instanceof UserDaoImplFile)
+            userDao.update(currentUser);
         return newEntry;
     }
 
@@ -82,13 +89,13 @@ public class UserService {
         return currentUser.getEntries();
     }
 
-    public Entry getEntryById(String userLogin, Long id) {
+    public Entry getEntryByCellNumber(String userLogin, String cellNumber) {
         User currentUser = userDao.getByLogin(userLogin);
 
         if (currentUser == null)
             throw new IllegalArgumentException("User is not found for the specified login = " + userLogin);
         for (Entry e : currentUser.getEntries())
-            if (e.getId() == id)
+            if (e.getCellNumber().equals(cellNumber))
                 return e;
         return null;
     }
@@ -96,7 +103,7 @@ public class UserService {
     public void deleteEntry(String userLogin, Entry entry) {
         User currentUser = userDao.getByLogin(userLogin);
 
-        Entry entryToDelete = getEntryById(userLogin, entry.getId());
+        Entry entryToDelete = getEntryByCellNumber(userLogin, entry.getCellNumber());
 
         if (null == entryToDelete)
             throw new IllegalArgumentException("User is not found for the specified login = " + userLogin);

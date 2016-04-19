@@ -73,7 +73,7 @@ public class UserServiceTest {
         userService.addEntry(user.getLogin(), entry);
         assertEquals(userService.getEntriesCount(user.getLogin()), startCount + 1);
 
-        Entry aEntry = userService.getEntryById(user.getLogin(), entry.getId());
+        Entry aEntry = userService.getEntryByCellNumber(user.getLogin(), entry.getCellNumber());
         assertNotNull(aEntry);
 
         userService.deleteEntry(user.getLogin(), aEntry);
@@ -87,10 +87,10 @@ public class UserServiceTest {
         assertNotNull(entries);
         assertTrue(entries.size() > 0);
 
-        Entry aEntry = userService.getEntryById(user.getLogin(), entry.getId());
+        Entry aEntry = userService.getEntryByCellNumber(user.getLogin(), entry.getCellNumber());
         aEntry.setFirstName("Петр");
         userService.updateEntry(user.getLogin(), aEntry);
-        Entry updatedEntry = userService.getEntryById(user.getLogin(), aEntry.getId());
+        Entry updatedEntry = userService.getEntryByCellNumber(user.getLogin(), entry.getCellNumber());
         assertNotNull(updatedEntry);
         assertEquals(aEntry.getFirstName(), updatedEntry.getFirstName());
     }
