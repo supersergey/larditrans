@@ -90,7 +90,7 @@ public class User {
 
         User user = (User) o;
 
-        if (!id.equals(user.id)) return false;
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
         if (!login.equals(user.login)) return false;
         if (!password.equals(user.password)) return false;
         if (!fullName.equals(user.fullName)) return false;
@@ -100,7 +100,11 @@ public class User {
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + login.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + fullName.hashCode();
+        result = 31 * result + (entries != null ? entries.hashCode() : 0);
+        return result;
     }
-
 }

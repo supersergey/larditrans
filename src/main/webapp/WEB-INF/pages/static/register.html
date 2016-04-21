@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация в системе</title>
+    <meta name="robots" content="noindex, nofollow">
+    <!-- Include CSS File Here -->
+    <link rel="stylesheet" href="css/style.css"/>
+    <!-- Include CSS File Here -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"/>
+    <script type="text/javascript" src="js/register.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="main">
+        <form class="form" method="post" action="#">
+            <h2>Введите свои данные</h2>
+            <label>Логин:</label>
+            <input type="text" name="username" id="userlogin">
+            <label>Пароль:</label>
+            <input type="password" name="password1" id="password1">
+            <label>Пароль еще раз:</label>
+            <input type="password" name="password2" id="password2">
+            <label>ФИО:</label>
+            <input type="text" name="fullName" id="fullName">
+            <input type="button" name="login" id="login" value="Регистрация">
+            <a href="/login.html">Перейти на страницу входа</a>
+        </form>
+    </div>
+</div>
+
+<div id="okdialog" title="Поздравляем!" style="display: none">
+    <p>Регистрация прошла успешно. Теперь вы можете войти в систему!</p>
+</div>
+<div id="errordialog" title="Ошибка" style="display: none">
+    <p>Ошибка при регистрации! Попробуйте еще раз.</p>
+</div>
+<div id="passwordNotMatchdialog" title="Ошибка" style="display: none">
+    <p>Пароли не совпадают! Попробуйте еще раз.</p>
+</div>
+
+</body>
+</html>

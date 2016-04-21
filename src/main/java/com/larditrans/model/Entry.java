@@ -133,14 +133,10 @@ public class Entry {
 
         Entry entry = (Entry) o;
 
-        if (!id.equals(entry.id)) return false;
         if (!lastName.equals(entry.lastName)) return false;
         if (!firstName.equals(entry.firstName)) return false;
         if (!patronymic.equals(entry.patronymic)) return false;
         if (!cellNumber.equals(entry.cellNumber)) return false;
-        if (!phoneNumber.equals(entry.phoneNumber)) return false;
-        if (!address.equals(entry.address)) return false;
-        if (!email.equals(entry.email)) return false;
         return !(owner != null ? !owner.equals(entry.owner) : entry.owner != null);
 
     }
@@ -151,9 +147,6 @@ public class Entry {
         result = 31 * result + firstName.hashCode();
         result = 31 * result + patronymic.hashCode();
         result = 31 * result + cellNumber.hashCode();
-        result = 31 * result + phoneNumber.hashCode();
-        result = 31 * result + address.hashCode();
-        result = 31 * result + email.hashCode();
         return result;
     }
 }

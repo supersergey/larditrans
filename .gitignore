@@ -20,3 +20,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+#Custom
+/filesdbdbdbd/
+/db dump/
+/src/main/webapp/WEB-INF/pages/static/trirand/

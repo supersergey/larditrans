@@ -26,6 +26,17 @@ public class UserService {
         userDao = daoProviderService.provideUserDao();
     }
 
+    public User addUser(User user)
+    {
+        userDao.add(user);
+        return user;
+    }
+
+    public User getUserByLogin(String login)
+    {
+        return userDao.getByLogin(login);
+    }
+
     public User addEntry(String userLogin, Entry entry) {
         if (userLogin == null || userLogin.equals("")) {
             throw new IllegalArgumentException("Empty user login is not allowed.");
@@ -111,6 +122,7 @@ public class UserService {
         if (!currentUser.getEntries().contains(entryToDelete))
             throw new IllegalArgumentException("Entry is not found." + userLogin);
         currentUser.getEntries().remove(entryToDelete);
+        userDao.update(currentUser);
     }
 
     public int getEntriesCount(String userLogin) {

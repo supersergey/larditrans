@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+
+    <script type="text/ecmascript" src=trirand/js/jquery-1.11.0.min.js></script>
+    <!-- The jQuery library is a prerequisite for all jqSuite products -->
+    <!-- We support more than 40 localizations -->
+    <script type="text/ecmascript" src="trirand/js/i18n/grid.locale-ru.js"></script>
+    <!-- This is the Javascript file of jqGrid -->
+    <!--<script type="text/ecmascript" src="trirand/js/jquery.jqGrid.min.js"></script>-->
+    <!-- This is the localization file of the grid controlling messages, labels, etc.
+    <!-- A link to a jQuery UI ThemeRoller theme, more than 22 built-in and many more custom -->
+    <script type="text/ecmascript" src="trirand/js/jquery.jqGrid.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="trirand/css/ui.jqgrid-bootstrap.css">
+    <!--<link rel="stylesheet" type="text/css" media="screen" href="trirand/css/ui.jqgrid-bootstrap-ui.css">-->
+    <!-- The link to the CSS that the grid needs -->
+
+    <script>
+        $.jgrid.defaults.width = 780;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+
+    <meta charset="utf-8"/>
+    <title>Данные адресной книги</title>
+</head>
+<body>
+
+<div style="margin-left:20px">
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+</div>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        userLogin = localStorage.getItem('userLogin');
+        token = localStorage.getItem('token');
+        $("#jqGrid").jqGrid({
+            url: '/getEntries',
+            datatype: "json",
+            mtype: 'POST',
+            postData: {userLogin: userLogin, token: token},
+            loadError: function LoadErrorHandler(jqXHR, textStatus, errorThrown){
+                alert("Ошибка авторизации. Вы будете перенаправлены на страницу ввода.");
+                window.location.replace("login.html");
+            },
+            colModel: [
+                {
+                    label: 'Фамилия', name: 'lastName',
+                    editable: true,
+                    editrules: {custom: true, custom_func: isValidName},
+                    required: true,
+                    width: 75,
+                    sorttype: 'String'
+                },
+                {
+                    label: 'Имя', name: 'firstName',
+                    editable: true,
+                    editrules: {custom: true, custom_func: isValidName},
+                    required: true,
+                    width: 90,
+                    sorttype: 'String'
+                },
+                {
+                    label: 'Отчество', name: 'patronymic',
+                    editable: true,
+                    editrules: {custom: true, custom_func: isValidName},
+                    required: true,
+                    width: 100,
+                    sorttype: 'String'
+                },
+                {
+                    label: 'Мобильный тел.', name: 'cellNumber',
+                    editable: true,
+                    editrules: {custom: true, custom_func: isValidPhone},
+                    required: true,
+                    width: 80,
+                    sorttype: 'String',
+                    key: true,
+                },
+                {
+                    label: 'Домашний тел.', name: 'phoneNumber',
+                    editable: true,
+                    editrules: {custom: true, custom_func: isValidPhone},
+                    width: 80,
+                    sorttype: 'String'
+                },
+                {
+                    label: 'Адрес', name: 'address', width: 80,
+                    editable: true,
+                    sorttype: 'String'
+                },
+                {
+                    label: 'Е-почта', name: 'email', width: 80,
+                    editable: true,
+                    editrules: {required: true, email: true},
+                    sorttype: 'String'
+                }
+
+                // sorttype is used only if the data is loaded locally or loadonce is set to true
+            ],
+            viewrecords: true, // show the current page, data rang and total records on the toolbar
+            width: 780,
+            height: 200,
+            rowNum: 30,
+            loadonce: false, // this is just for the demo
+            pager: "#jqGridPager"
+        });
+
+        function isValidName(value, column) {
+            if (!/[^a-zа-я]/i.test(value) == true && value.length >= 4)
+                return [true, ""];
+            else
+                return [false, "Ошибка ввода. Проверьте правильность заполнения формы"];
+        }
+
+        function isValidPhone(value, column) {
+            var str = value.replace(/(\s|\(|\)|-|\.|\+)/g, '');
+            if (str.length == 0)
+                return [true, ''];
+            else
+            if ((str.length == 10 || str.length == 12) && /^\d+$/.test(str))
+                return [true, ''];
+            else
+                return [false, "Ошибка ввода телефонного номера. Проверьте правильность заполнения формы!"];
+        }
+
+        $('#jqGrid').navGrid('#jqGridPager',
+                // the buttons to appear on the toolbar of the grid
+                {
+                    edit: true,
+                    add: true,
+                    del: true,
+                    search: false,
+                    refresh: false,
+                    view: false,
+                    position: "left",
+                    cloneToTop: false
+                },
+                {
+                    editData: {userLogin: userLogin, token: token},
+                    url: '/editEntry'
+                },
+                {
+                    editData: {userLogin: userLogin, token: token},
+                    url: '/addEntry'
+                },
+                {
+                    delData: {userLogin: userLogin, token: token},
+                    url: '/deleteEntry'
+                },
+                // options for the Edit Dialog
+                {
+                    height: 'auto',
+                    width: 620,
+                    editCaption: "The Edit Dialog",
+                    recreateForm: true,
+                    closeAfterEdit: true,
+                    errorTextFormat: function (data) {
+                        return 'Error: ' + data.responseText
+                    }
+                },
+                // options for the Add Dialog
+                {
+                    height: 'auto',
+                    width: 620,
+                    closeAfterAdd: true,
+                    recreateForm: true,
+                    errorTextFormat: function (data) {
+                        return 'Error: ' + data.responseText
+                    }
+                },
+                // options for the Delete Dailog
+                {
+                    errorTextFormat: function (data) {
+                        return 'Error: ' + data.responseText
+                    }
+                });
+    });
+</script>
+
+</body>
+</html>

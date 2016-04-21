@@ -18,15 +18,15 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @ComponentScan("com.larditrans")
 public class AppConfig extends WebMvcConfigurerAdapter {
 
-    @Bean
-    public UrlBasedViewResolver setupViewResolver() {
-        UrlBasedViewResolver resolver = new UrlBasedViewResolver();
-        resolver.setPrefix("/WEB-INF/pages/");
-        resolver.setSuffix(".jsp");
-        resolver.setViewClass(JstlView.class);
-        resolver.setOrder(1);
-        return resolver;
-    }
+//    @Bean
+//    public UrlBasedViewResolver setupViewResolver() {
+//        UrlBasedViewResolver resolver = new UrlBasedViewResolver();
+//        resolver.setPrefix("/WEB-INF/pages/");
+//        resolver.setSuffix(".jsp");
+//        resolver.setViewClass(JstlView.class);
+//        resolver.setOrder(1);
+//        return resolver;
+//    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Авторазиция</title>
+    <meta name="robots" content="noindex, nofollow">
+    <!-- Include CSS File Here -->
+    <link rel="stylesheet" href="css/style.css"/>
+    <!-- Include CSS File Here -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <script type="text/javascript" src="js/login.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="main">
+        <form class="form" method="post" action="#">
+            <h2>Авторизация</h2>
+            <label>Логин:</label>
+            <input type="text" name="username" id="userlogin">
+            <label>Пароль:</label>
+            <input type="password" name="password" id="password">
+            <input type="button" name="login" id="login" value="Вход">
+            <a href="/register.html">Регистрация</a>
+        </form>
+    </div>
+</div>
+
+<div id="dialog" title="Basic dialog" style="display: none">
+    <p>Неправильно введен логин и пароль. Попробуйте еще раз.</p>
+</div>
+
+</body>
+</html>
