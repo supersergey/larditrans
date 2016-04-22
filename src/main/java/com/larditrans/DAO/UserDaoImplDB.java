@@ -1,6 +1,7 @@
 package com.larditrans.dao;
 
 
+import com.larditrans.model.Entry;
 import com.larditrans.model.User;
 
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by sergey on 14.04.2016.
@@ -55,5 +57,18 @@ public class UserDaoImplDb implements UserDao {
         }
         catch (NoResultException ex)  {}
         return result;
+    }
+
+    @Override
+    public int getEntriesCount(String login)
+    {
+        User user = getByLogin(login);
+        return (null == user.getEntries()) ? 0 : user.getEntries().size();
+    }
+
+    @Override
+    public List<Entry> search(String login, String columnName, String term) {
+        return null;
+        // todo
     }
 }

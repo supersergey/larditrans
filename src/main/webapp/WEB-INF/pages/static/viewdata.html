@@ -21,9 +21,11 @@
     <script>
         $.jgrid.defaults.width = 780;
         $.jgrid.defaults.styleUI = 'Bootstrap';
+        $.jgrid.defaults.responsive = true;
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 
     <meta charset="utf-8"/>
     <title>Данные адресной книги</title>
@@ -52,12 +54,30 @@
             },
             colModel: [
                 {
-                    label: 'Фамилия', name: 'lastName',
+                    label: 'Фамилия',
+                    name: 'lastName',
                     editable: true,
                     editrules: {custom: true, custom_func: isValidName},
                     required: true,
                     width: 75,
-                    sorttype: 'String'
+                    sorttype: 'String',
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "on").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "jsonp",
+                                        data: {term: query, columnName: 'LastName', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 },
                 {
                     label: 'Имя', name: 'firstName',
@@ -65,7 +85,24 @@
                     editrules: {custom: true, custom_func: isValidName},
                     required: true,
                     width: 90,
-                    sorttype: 'String'
+                    sorttype: 'String',
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "off").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "jsonp",
+                                        data: {term: query, columnName: 'FirstName', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 },
                 {
                     label: 'Отчество', name: 'patronymic',
@@ -73,7 +110,25 @@
                     editrules: {custom: true, custom_func: isValidName},
                     required: true,
                     width: 100,
-                    sorttype: 'String'
+                    sorttype: 'String',
+                    search: true,
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "off").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "json",
+                                        data: {term: query, columnName: 'Patronymic', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 },
                 {
                     label: 'Мобильный тел.', name: 'cellNumber',
@@ -83,33 +138,105 @@
                     width: 80,
                     sorttype: 'String',
                     key: true,
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "off").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "jsonp",
+                                        data: {term: query, columnName: 'CellNumber', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 },
                 {
                     label: 'Домашний тел.', name: 'phoneNumber',
                     editable: true,
                     editrules: {custom: true, custom_func: isValidPhone},
                     width: 80,
-                    sorttype: 'String'
+                    required: false,
+                    sorttype: 'String',
+                    sortType: 'String',
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "off").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "jsonp",
+                                        data: {term: query, columnName: 'PhoneNumber', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 },
                 {
                     label: 'Адрес', name: 'address', width: 80,
                     editable: true,
-                    sorttype: 'String'
+                    required: false,
+                    sorttype: 'String',
+                    sortType: 'String',
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "off").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "jsonp",
+                                        data: {term: query, columnName: 'Address', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 },
                 {
                     label: 'Е-почта', name: 'email', width: 80,
                     editable: true,
-                    editrules: {required: true, email: true},
-                    sorttype: 'String'
+                    required: false,
+                    editrules: {email: true, required: false},
+                    sorttype: 'String',
+                    sortType: 'String',
+                    searchoptions: {
+                        dataInit: function (element) {
+                            $(element).attr("autocomplete", "off").typeahead({
+                                appendTo: "body",
+                                source: function (query, proxy) {
+                                    $.ajax({
+                                        url: '/search',
+                                        dataType: "jsonp",
+                                        data: {term: query, columnName: 'Email', userLogin : userLogin, token : token},
+                                        success: proxy,
+                                        method: 'POST'
+                                    });
+                                }
+                            });
+                        },
+                        sopt: ['cn']
+                    }
                 }
-
-                // sorttype is used only if the data is loaded locally or loadonce is set to true
             ],
             viewrecords: true, // show the current page, data rang and total records on the toolbar
             width: 780,
             height: 200,
-            rowNum: 30,
-            loadonce: false, // this is just for the demo
+            rowNum: 4,
+            loadonce: false,
             pager: "#jqGridPager"
         });
 
@@ -131,15 +258,16 @@
                 return [false, "Ошибка ввода телефонного номера. Проверьте правильность заполнения формы!"];
         }
 
-        $('#jqGrid').navGrid('#jqGridPager',
+        $('#jqGrid').jqGrid('filterToolbar');
+        $('#jqGrid').jqGrid('navGrid',"#jqGridPager",
                 // the buttons to appear on the toolbar of the grid
                 {
                     edit: true,
                     add: true,
                     del: true,
                     search: false,
-                    refresh: false,
-                    view: false,
+                    refresh: true,
+                    view: true,
                     position: "left",
                     cloneToTop: false
                 },
@@ -176,7 +304,7 @@
                         return 'Error: ' + data.responseText
                     }
                 },
-                // options for the Delete Dailog
+                // options for the Delete Dialog
                 {
                     errorTextFormat: function (data) {
                         return 'Error: ' + data.responseText

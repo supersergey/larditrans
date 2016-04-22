@@ -1,11 +1,16 @@
 package com.larditrans.dao;
 
 import com.larditrans.fileDb.FileDb;
+import com.larditrans.model.Entry;
 import com.larditrans.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by sergey on 15.04.2016.
@@ -67,5 +72,36 @@ public class UserDaoImplFile implements UserDao {
             ex.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    public int getEntriesCount(String login)
+    {
+        User user = getByLogin(login);
+        return (null == user.getEntries()) ? 0 : user.getEntries().size();
+    }
+
+    public List<Entry> search(String login, String columnName, String term)
+    {
+        if (null == login || login.isEmpty())
+            throw new IllegalArgumentException("Empty user login is not allowed. = " + login);
+        if (!fileDb.exists(login))
+            throw new IllegalArgumentException("User not found. = " + login);
+        List<Entry> result = new ArrayList<>();
+        User user = getByLogin(login);
+        if (null == user)
+            return null;
+        else {
+            for (Entry e : user.getEntries()) {
+                try
+                {
+                    String s = (String) e.getClass().getMethod("get" + columnName).invoke(e);
+                    if (s.contains(term))
+                        result.add(e);
+                }
+                catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException ex) {}
+            }
+            return result;
+        }
     }
 }

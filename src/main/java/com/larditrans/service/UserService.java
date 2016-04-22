@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * Created by sergey on 16.04.2016.
@@ -26,14 +27,12 @@ public class UserService {
         userDao = daoProviderService.provideUserDao();
     }
 
-    public User addUser(User user)
-    {
+    public User addUser(User user) {
         userDao.add(user);
         return user;
     }
 
-    public User getUserByLogin(String login)
-    {
+    public User getUserByLogin(String login) {
         return userDao.getByLogin(login);
     }
 
@@ -126,7 +125,37 @@ public class UserService {
     }
 
     public int getEntriesCount(String userLogin) {
-        Set<Entry> entries = getAllEntries(userLogin);
-        return null == entries ? 0 : entries.size();
+        return userDao.getEntriesCount(userLogin);
+    }
+
+    public List<Entry> getSortedEntries(String userLogin, String columnName, final String sortOrder, int startIndex, int endIndex) {
+        List sortedList = new ArrayList(getAllEntries(userLogin));
+        if (!columnName.isEmpty())
+        {
+            final String modifiedColumnName = columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
+            Collections.sort(sortedList, new Comparator<Entry>() {
+                @Override
+                public int compare(Entry e1, Entry e2) {
+                    String value1 = "";
+                    String value2 = "";
+                    try {
+                        value1 = (String) e1.getClass().getMethod("get" + modifiedColumnName).invoke(e1);
+                        value2 = (String) e2.getClass().getMethod("get" + modifiedColumnName).invoke(e2);
+                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+                    }
+
+                    return sortOrder.equals("asc") ? value1.compareTo(value2) : value2.compareTo(value1);
+                }
+            });
+        }
+        if (endIndex > sortedList.size())
+            endIndex = sortedList.size();
+        return sortedList.subList(startIndex, endIndex);
+    }
+
+    public List<Entry> search(String userLogin, String columnName, String term)
+    {
+        return userDao.search(userLogin, columnName, term);
+
     }
 }
