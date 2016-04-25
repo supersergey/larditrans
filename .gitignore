@@ -23,5 +23,4 @@ fabric.properties
 
 #Custom
 /filesdbdbdbd/
-/db dump/
 /src/main/webapp/WEB-INF/pages/static/trirand/
