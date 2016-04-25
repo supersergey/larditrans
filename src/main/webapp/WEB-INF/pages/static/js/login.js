@@ -5,7 +5,7 @@ $(document).ready(
                 var userLogin = $("#userlogin").val();
                 var password = $("#password").val();
 // Checking for blank fields.
-                if (userlogin == '' || userlogin.length < 3 || password == '' || password.length < 5) {
+                if (userLogin == '' || userLogin.length < 3 || password == '' || password.length < 5) {
                     $('input[type="text"],input[type="password"]').css("border", "2px solid red");
                     $('input[type="text"],input[type="password"]').css("box-shadow", "0 0 3px red");
 

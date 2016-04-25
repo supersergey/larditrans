@@ -26,7 +26,7 @@ public class FileDb {
         return new File(String.format(fileDbPath + userDbFilePath, userLogin)).exists();
     }
 
-    public User readFromFile(String userLogin) throws IOException {
+    public synchronized User readFromFile(String userLogin) throws IOException {
 
         if (exists((userLogin))) {
             RandomAccessFile raf = new RandomAccessFile(String.format(fileDbPath + userDbFilePath, userLogin), "r");
@@ -42,10 +42,10 @@ public class FileDb {
             return null;
     }
 
-    public void writeToFile(User user) throws IOException {
+    public synchronized void writeToFile(User user) throws IOException {
         File f = new File(fileDbPath);
         if (!f.exists())
-            f.mkdir();
+            f.mkdirs();
 
         f = new File(String.format(fileDbPath + userDbFilePath, user.getLogin()));
         if (f.exists())
@@ -60,7 +60,7 @@ public class FileDb {
         raf.close();
     }
 
-    public void deleteFile(User user)
+    public synchronized void deleteFile(User user)
     {
         File f = new File(String.format(fileDbPath + userDbFilePath, user.getLogin()));
         if (!f.exists())

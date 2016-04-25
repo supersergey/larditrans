@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -44,6 +43,9 @@ public class UserService {
             throw new IllegalArgumentException("Empty entry is not allowed.");
         }
 
+        if (!entry.isValid())
+            throw new IllegalArgumentException("Entry fields are not valid.");
+
         User currentUser = userDao.getByLogin(userLogin);
 
         if (currentUser == null) {
@@ -53,8 +55,7 @@ public class UserService {
         entry.setOwner(currentUser);
         currentUser.getEntries().add(entry);
 
-        if (userDao instanceof UserDaoImplFile)
-            userDao.update(currentUser);
+        userDao.update(currentUser);
 
         return currentUser;
     }
@@ -66,6 +67,9 @@ public class UserService {
         if (newEntry == null) {
             throw new IllegalArgumentException("Empty entry is not allowed.");
         }
+
+        if (!newEntry.isValid())
+            throw new IllegalArgumentException("Entry fields are not valid.");
 
         User currentUser = userDao.getByLogin(userLogin);
 
@@ -128,34 +132,13 @@ public class UserService {
         return userDao.getEntriesCount(userLogin);
     }
 
-    public List<Entry> getSortedEntries(String userLogin, String columnName, final String sortOrder, int startIndex, int endIndex) {
-        List sortedList = new ArrayList(getAllEntries(userLogin));
-        if (!columnName.isEmpty())
-        {
-            final String modifiedColumnName = columnName.substring(0, 1).toUpperCase() + columnName.substring(1);
-            Collections.sort(sortedList, new Comparator<Entry>() {
-                @Override
-                public int compare(Entry e1, Entry e2) {
-                    String value1 = "";
-                    String value2 = "";
-                    try {
-                        value1 = (String) e1.getClass().getMethod("get" + modifiedColumnName).invoke(e1);
-                        value2 = (String) e2.getClass().getMethod("get" + modifiedColumnName).invoke(e2);
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-                    }
+    public List<Entry> getSortedEntries(String userLogin, String columnName, String sortOrder, Entry searchEntry) {
 
-                    return sortOrder.equals("asc") ? value1.compareTo(value2) : value2.compareTo(value1);
-                }
-            });
-        }
-        if (endIndex > sortedList.size())
-            endIndex = sortedList.size();
-        return sortedList.subList(startIndex, endIndex);
+        return userDao.getSortedEntries(userLogin, columnName, sortOrder, searchEntry);
     }
 
-    public List<Entry> search(String userLogin, String columnName, String term)
+    public List<AutoCompleteResult> autoComplete(String userLogin, String columnName, String term)
     {
-        return userDao.search(userLogin, columnName, term);
-
+        return userDao.autoComplete(userLogin, columnName, term);
     }
 }

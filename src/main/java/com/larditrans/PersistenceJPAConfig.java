@@ -1,5 +1,6 @@
 package com.larditrans;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,12 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 @ComponentScan("com.larditrans")
 public class PersistenceJPAConfig{
+    @Value("${javax.persistence.jdbc.url}")
+    private String dbUrl;
+    @Value("${javax.persistence.jdbc.user}}")
+    private String dbUser;
+    @Value("${javax.persistence.jdbc.password}")
+    private String dbPassword;
 
     public PersistenceJPAConfig() {
         super();
@@ -35,6 +42,10 @@ public class PersistenceJPAConfig{
     @Bean
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+
+        dataSource.setUrl(dbUrl);
+        dataSource.setUsername(dbUser);
+        dataSource.setPassword(dbPassword);
         return dataSource;
     }
 

@@ -26,7 +26,7 @@ public class Entry {
     private String patronymic;
 
     @Expose
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String cellNumber;
 
     @Expose
@@ -38,7 +38,8 @@ public class Entry {
     @Expose
     private String email;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     public long getId() {
@@ -149,4 +150,31 @@ public class Entry {
         result = 31 * result + cellNumber.hashCode();
         return result;
     }
+
+    public boolean isValid() {
+        if (null == this.getLastName() ||
+                !this.getLastName().matches("[A-Za-zа-яА-Я]{4,}"))
+            return false;
+        if (null == this.getFirstName() ||
+                !this.getLastName().matches("[A-Za-zа-яА-Я]{4,}"))
+            return false;
+        if (null == this.getPatronymic() ||
+                !this.getLastName().matches("[A-Za-zа-яА-Я]{4,}"))
+            return false;
+        if (null != this.getEmail()) {
+            if (this.getEmail().isEmpty())
+                return false;
+            else if (!this.getEmail().matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$"))
+                return false;
+            if (null == this.getCellNumber() || this.getCellNumber().isEmpty())
+                return false;
+            else {
+                String cellNumber = this.getCellNumber().replaceAll("/(\\s|\\(|\\)|-|\\.|\\+)/g", "");
+                if (!cellNumber.matches("^(?=[0-9]*$)(?:.{10}|.{12})$"))
+                    return false;
+            }
+        }
+        return true;
+    }
 }
+

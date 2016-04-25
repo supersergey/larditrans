@@ -3,14 +3,10 @@
 <html lang="ru">
 <head>
 
-    <script type="text/ecmascript" src=trirand/js/jquery-1.11.0.min.js></script>
-    <!-- The jQuery library is a prerequisite for all jqSuite products -->
-    <!-- We support more than 40 localizations -->
+    <script type="text/ecmascript" src="jquery/jquery-2.2.3.min.js"></script>
+
     <script type="text/ecmascript" src="trirand/js/i18n/grid.locale-ru.js"></script>
-    <!-- This is the Javascript file of jqGrid -->
-    <!--<script type="text/ecmascript" src="trirand/js/jquery.jqGrid.min.js"></script>-->
-    <!-- This is the localization file of the grid controlling messages, labels, etc.
-    <!-- A link to a jQuery UI ThemeRoller theme, more than 22 built-in and many more custom -->
+
     <script type="text/ecmascript" src="trirand/js/jquery.jqGrid.min.js"></script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -19,14 +15,13 @@
     <!-- The link to the CSS that the grid needs -->
 
     <script>
-        $.jgrid.defaults.width = 780;
-        $.jgrid.defaults.styleUI = 'Bootstrap';
+        $.jgrid.defaults.width = 1050;
         $.jgrid.defaults.responsive = true;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
-
+    <!--<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>-->
+    <script type="text/ecmascript" src="trirand/js/bootstrap3-typeahead.js"></script>
     <meta charset="utf-8"/>
     <title>Данные адресной книги</title>
 </head>
@@ -59,16 +54,16 @@
                     editable: true,
                     editrules: {custom: true, custom_func: isValidName},
                     required: true,
-                    width: 75,
+                    width: 150,
                     sorttype: 'String',
                     searchoptions: {
                         dataInit: function (element) {
-                            $(element).attr("autocomplete", "on").typeahead({
+                            $(element).attr("autocomplete", "off").typeahead({
                                 appendTo: "body",
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
-                                        dataType: "jsonp",
+                                        url: '/autoComplete',
+                                        dataType: "json",
                                         data: {term: query, columnName: 'LastName', userLogin : userLogin, token : token},
                                         success: proxy,
                                         method: 'POST'
@@ -84,7 +79,7 @@
                     editable: true,
                     editrules: {custom: true, custom_func: isValidName},
                     required: true,
-                    width: 90,
+                    width: 150,
                     sorttype: 'String',
                     searchoptions: {
                         dataInit: function (element) {
@@ -92,8 +87,8 @@
                                 appendTo: "body",
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
-                                        dataType: "jsonp",
+                                        url: '/autoComplete',
+                                        dataType: "json",
                                         data: {term: query, columnName: 'FirstName', userLogin : userLogin, token : token},
                                         success: proxy,
                                         method: 'POST'
@@ -109,16 +104,16 @@
                     editable: true,
                     editrules: {custom: true, custom_func: isValidName},
                     required: true,
-                    width: 100,
+                    width: 150,
                     sorttype: 'String',
-                    search: true,
                     searchoptions: {
                         dataInit: function (element) {
                             $(element).attr("autocomplete", "off").typeahead({
                                 appendTo: "body",
+
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
+                                        url: '/autoComplete',
                                         dataType: "json",
                                         data: {term: query, columnName: 'Patronymic', userLogin : userLogin, token : token},
                                         success: proxy,
@@ -135,7 +130,7 @@
                     editable: true,
                     editrules: {custom: true, custom_func: isValidPhone},
                     required: true,
-                    width: 80,
+                    width: 150,
                     sorttype: 'String',
                     key: true,
                     searchoptions: {
@@ -144,8 +139,8 @@
                                 appendTo: "body",
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
-                                        dataType: "jsonp",
+                                        url: '/autoComplete',
+                                        dataType: "json",
                                         data: {term: query, columnName: 'CellNumber', userLogin : userLogin, token : token},
                                         success: proxy,
                                         method: 'POST'
@@ -160,7 +155,7 @@
                     label: 'Домашний тел.', name: 'phoneNumber',
                     editable: true,
                     editrules: {custom: true, custom_func: isValidPhone},
-                    width: 80,
+                    width: 150,
                     required: false,
                     sorttype: 'String',
                     sortType: 'String',
@@ -170,8 +165,8 @@
                                 appendTo: "body",
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
-                                        dataType: "jsonp",
+                                        url: '/autoComplete',
+                                        dataType: "json",
                                         data: {term: query, columnName: 'PhoneNumber', userLogin : userLogin, token : token},
                                         success: proxy,
                                         method: 'POST'
@@ -183,7 +178,7 @@
                     }
                 },
                 {
-                    label: 'Адрес', name: 'address', width: 80,
+                    label: 'Адрес', name: 'address', width: 150,
                     editable: true,
                     required: false,
                     sorttype: 'String',
@@ -194,8 +189,8 @@
                                 appendTo: "body",
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
-                                        dataType: "jsonp",
+                                        url: '/autoComplete',
+                                        dataType: "json",
                                         data: {term: query, columnName: 'Address', userLogin : userLogin, token : token},
                                         success: proxy,
                                         method: 'POST'
@@ -207,7 +202,7 @@
                     }
                 },
                 {
-                    label: 'Е-почта', name: 'email', width: 80,
+                    label: 'Е-почта', name: 'email', width: 150,
                     editable: true,
                     required: false,
                     editrules: {email: true, required: false},
@@ -219,8 +214,8 @@
                                 appendTo: "body",
                                 source: function (query, proxy) {
                                     $.ajax({
-                                        url: '/search',
-                                        dataType: "jsonp",
+                                        url: '/autoComplete',
+                                        dataType: "json",
                                         data: {term: query, columnName: 'Email', userLogin : userLogin, token : token},
                                         success: proxy,
                                         method: 'POST'
@@ -233,7 +228,7 @@
                 }
             ],
             viewrecords: true, // show the current page, data rang and total records on the toolbar
-            width: 780,
+            width: 1050,
             height: 200,
             rowNum: 4,
             loadonce: false,
@@ -269,14 +264,20 @@
                     refresh: true,
                     view: true,
                     position: "left",
+                    closeAfterAdd: true,
+                    closeAfterEdit: true,
                     cloneToTop: false
                 },
                 {
                     editData: {userLogin: userLogin, token: token},
+                    closeAfterAdd: true,
+                    closeAfterEdit: true,
                     url: '/editEntry'
                 },
                 {
                     editData: {userLogin: userLogin, token: token},
+                    closeAfterAdd: true,
+                    closeAfterEdit: true,
                     url: '/addEntry'
                 },
                 {

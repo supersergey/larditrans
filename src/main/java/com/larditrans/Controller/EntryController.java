@@ -2,11 +2,14 @@ package com.larditrans.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.larditrans.dao.UserDao;
+import com.larditrans.service.AutoCompleteResult;
 import com.larditrans.model.Entry;
 import com.larditrans.model.User;
 import com.larditrans.service.UserService;
 import com.larditrans.tokenizer.Tokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +26,10 @@ public class EntryController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    @Qualifier("userDaoImplDb")
+    private UserDao userDao;
+
     private boolean isAuthorized(String userLogin, Integer token) {
         User user = userService.getUserByLogin(userLogin);
         if (null == user || !Tokenizer.getInstance().getToken(userLogin).equals(token))
@@ -33,26 +40,43 @@ public class EntryController {
 
     @RequestMapping(value = "/getEntries", method = RequestMethod.POST)
     public String doGetEntries(@RequestParam String userLogin, @RequestParam Integer token,
-                               @RequestParam(name = "sidx") String columnName, // column to sort
-                               @RequestParam(name = "sord") String sortOrder, // sort direction, desc or asc
+                               @RequestParam(name = "sidx", required = false) String columnName, // column to sort
+                               @RequestParam(name = "sord", required = false) String sortOrder, // sort direction, desc or asc
                                @RequestParam(defaultValue = "0") Integer rows, // number of rows to display on paginator
                                @RequestParam(defaultValue = "1") Integer page, // current page number
+                               @RequestParam(required = false) String lastName,
+                               @RequestParam(required = false) String firstName,
+                               @RequestParam(required = false) String patronymic,
+                               @RequestParam(required = false) String cellNumber,
+                               @RequestParam(required = false) String phoneNumber,
+                               @RequestParam(required = false) String address,
+                               @RequestParam(required = false) String email,
                                HttpServletResponse response) {
         String result = "";
         if (!isAuthorized(userLogin, token))
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
-            int startIndex = (page - 1) * rows;
-            int endIndex = page * rows;
-            List<Entry> entries = userService.getSortedEntries(userLogin, columnName, sortOrder, startIndex, endIndex);
-//            entries = new HashSet<>();
-//            entries.add(new Entry("Иванов", "Иван", "Иванович", "+385243432452", "+380445456456", "ул. Крещатик", "ivanov@gmail.com"));
-//            entries.add(new Entry("Петров", "Петр", "Иванович", "+380665465465", "+380445456456", "ул. Крещатик", "ivanov@gmail.com"));
+//            int startIndex = (page - 1) * rows;
+//            int endIndex = page * rows;
+            Entry searchEntry = new Entry(lastName, firstName, patronymic, cellNumber, phoneNumber, address, email);
+            List<Entry> entries = userService.getSortedEntries(userLogin, columnName, sortOrder,
+                    searchEntry);
+
             JsonResponse jsonResponse = new JsonResponse();
+            jsonResponse.total = entries.size() / rows + 1;
+            jsonResponse.records = entries.size();
+            if (rows < entries.size())
+            {   int startIndex = (page - 1) * rows;
+                int endIndex = page * rows;
+                if (endIndex > entries.size())
+                    endIndex = entries.size();
+                entries = entries.subList(startIndex, endIndex);
+            }
+
+            for (Entry e : entries)
+                e.setOwner(null);
             jsonResponse.page = page;
-            jsonResponse.records = userService.getEntriesCount(userLogin);
-            jsonResponse.rows = (Entry[]) entries.toArray(new Entry[0]);
-            jsonResponse.total = userService.getEntriesCount(userLogin) / rows + 1;
+            jsonResponse.rows = entries;
             Gson gson = new GsonBuilder().create();
             result = gson.toJson(jsonResponse);
             response.setStatus(HttpServletResponse.SC_OK);
@@ -109,21 +133,24 @@ public class EntryController {
         }
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST)
+    @RequestMapping(value = "/autoComplete", method = RequestMethod.POST)
     public String doSearch(@RequestParam String userLogin, @RequestParam Integer token,
-                                @RequestParam String columnName, @RequestParam String term,
-                                HttpServletResponse response) {
+                           @RequestParam String columnName, @RequestParam String term,
+                           HttpServletResponse response) {
         if (!isAuthorized(userLogin, token))
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
-            List<Entry> searchResult = userService.search(userLogin, columnName, term);
-            Entry[] rows = (Entry[]) searchResult.toArray(new Entry[0]);
-            Gson gson = new GsonBuilder().create();
-            String result = gson.toJson(rows);
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setCharacterEncoding("UTF-8");
-            return result;
-        }
+            List<AutoCompleteResult> autoCompleteResult = userService.autoComplete(userLogin, columnName, term);
+            if (null == autoCompleteResult || autoCompleteResult.isEmpty())
+                return null;
+            else {
+                    AutoCompleteResult[] rows = (AutoCompleteResult[]) autoCompleteResult.toArray(new AutoCompleteResult[0]);
+                    Gson gson = new GsonBuilder().create();
+                    String result = gson.toJson(rows);
+                response.setStatus(HttpServletResponse.SC_OK);
+                    return result;
+                }
+            }
         return null;
     }
 
@@ -131,9 +158,8 @@ public class EntryController {
         Integer records;
         Integer page;
         Integer total;
-        Entry[] rows;
+        List<Entry> rows;
     }
-
 }
 
 
