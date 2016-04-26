@@ -11,21 +11,22 @@ import java.util.Properties;
 @SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-//        try {
-//            String appFile = System.getProperty("lardi.conf");
-//            if (null == appFile)
-//                throw new IllegalArgumentException("Configuration file is not found. Run mvn -Dlardi.conf=<conf.file> to start application.");
-//            Properties properties = new Properties();
-//            InputStream in = new FileInputStream(appFile);
-//            properties.load(in);
-//            in.close();
-//            for (String p : properties.stringPropertyNames())
-//                System.setProperty(p, properties.getProperty(p));
-//            SpringApplication.run(Main.class, args);
-//        } catch (IOException ex) {
-//            throw new IllegalArgumentException("Configuration file is invalid. Run mvn -Dlardi.conf=<conf.file> to start application.");
-//        }
-        SpringApplication.run(Main.class, args);
+        try {
+            String appFile = System.getProperty("lardi.conf");
+            if (null == appFile)
+                throw new IllegalArgumentException("Configuration file is not found. Run mvn -Dlardi.conf=<conf.file> to start application. Starting application with src/main/resources/application.properties settings.");
+            Properties properties = new Properties();
+            InputStream in = new FileInputStream(appFile);
+            properties.load(in);
+            in.close();
+            for (String p : properties.stringPropertyNames())
+                System.setProperty(p, properties.getProperty(p));
+            SpringApplication.run(Main.class, args);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Configuration file is invalid. Run mvn -Dlardi.conf=<conf.file> to start application. Starting application with src/main/resources/application.properties settings.");
+        }
+        catch (IllegalArgumentException ex) {SpringApplication.run(Main.class, args);}
+
     }
 
 }
