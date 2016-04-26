@@ -11,6 +11,8 @@ When running the application, you must specify the configuration file in the com
 Edit `file.properties` according to the comments inside the file.
 You can find the default properties file at `src/main/resources/application.properties`
 
+If you do not specify the properties file or the file is not found, the application will run with default settings.
+
 ### Database setup ###
 
 By editing the configuration file, you  can select db or file system to store your files. If you decide to use the database, you must configure the database schema.
