@@ -21,7 +21,9 @@ import javax.validation.constraints.AssertTrue;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,11 +33,11 @@ import java.util.Set;
 @SpringApplicationConfiguration(AppConfig.class)
 @Transactional
 @WebAppConfiguration
-public class UserServiceTest {
+public class UserServiceTestDB {
 
     static
     {
-        System.setProperty("myproperty", "foo");
+        System.setProperty("filedb.enabled", "false");
     }
 
     @Autowired
@@ -54,6 +56,15 @@ public class UserServiceTest {
     private User user = new User("testuser", "testuser", "Test Test");
     Entry entry = new Entry("Иванов", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
 
+    List<Entry> entryList = new ArrayList();
+
+    {
+        entryList.add(new Entry("Шевченко", "Тарас", "Григориевич", "+380631234567", "0441234567", "c. Моринцы, Черкасская область", "sheva@ukr.net"));
+        entryList.add(new Entry("Шевчук", "Алекс", "Григориевич", "+380633336644", "", "", ""));
+        entryList.add(new Entry("Шевченко", "Игорь", "Петрович", "+380638887700", "", "", ""));
+        entryList.add(new Entry("Шевинский", "Александр", "Павлович", "+381214546581", "", "", ""));
+    }
+
     @Before
     public void addUser() {
         userDao.add(user);
@@ -66,10 +77,6 @@ public class UserServiceTest {
 
     @Test
     public void testAddEntry() throws Exception {
-
-        HashSet<Entry> testSet = new HashSet<>();
-        testSet.add(entry);
-        assertTrue(testSet.contains(entry));
 
         int startCount = userService.getEntriesCount(user.getLogin());
         assertEquals(startCount, 0);
@@ -97,5 +104,35 @@ public class UserServiceTest {
         Entry updatedEntry = userService.getEntryByCellNumber(user.getLogin(), entry.getCellNumber());
         assertNotNull(updatedEntry);
         assertEquals(aEntry.getFirstName(), updatedEntry.getFirstName());
+    }
+
+    @Test
+    public void testDeleteEntry() throws Exception {
+        userService.addEntry(user.getLogin(), entry);
+        assertEquals(1, userService.getEntriesCount(user.getLogin()));
+        userService.deleteEntry(user.getLogin(), entry);
+        assertEquals(0, userService.getEntriesCount(user.getLogin()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddEntry_Invalid1() throws Exception {
+        Entry invalidEntry = new Entry("Ива", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userService.addEntry(user.getLogin(), invalidEntry);
+        invalidEntry.setFirstName("123");
+        userService.addEntry(user.getLogin(), invalidEntry);
+        invalidEntry.setFirstName(null);
+        userService.addEntry(user.getLogin(), invalidEntry);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddEntry_Invalid2() throws Exception {
+        Entry invalidEntry = new Entry("Иванов", "", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userService.addEntry(user.getLogin(), invalidEntry);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddEntry_Invalid3() throws Exception {
+        Entry invalidEntry = new Entry("Иванов", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userService.addEntry(user.getLogin(), invalidEntry);
     }
 }
