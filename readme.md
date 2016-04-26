@@ -17,7 +17,7 @@ Before you run the application:
 
 ## Configuration file ##
 
-You must specify the configuration file in the command line, like
+When running the application, you must specify the configuration file in the command line, like
 
 `mvn spring-boot:run -Dlardi.conf=file.properties`
 
@@ -43,9 +43,9 @@ Open `localhost:8080` in your Web-browser.
 
 If you have configured the database with test data, you can login with the following credentials: 
 
-* login: test
+* login: `test`
 
-* password: test
+* password: `123456`
 
 If you have selected to use file storage, these credentials are available by default.
 
