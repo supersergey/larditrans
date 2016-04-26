@@ -4,7 +4,9 @@ import com.larditrans.AppConfig;
 import com.larditrans.model.Entry;
 import com.larditrans.model.User;
 
+import org.junit.After;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 /**
  * Created by sergey on 15.04.2016.
@@ -31,7 +32,7 @@ public class UserDaoImplFileTest {
 
 
     @Autowired
-    @Qualifier("userDaoImplDb")
+    @Qualifier("userDaoImplFile")
     private UserDao userDao;
 
     private User testUser = new User("testuser", "testuser", "Test Test");
@@ -39,7 +40,6 @@ public class UserDaoImplFileTest {
     Entry entry = new Entry("Иванов", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
 
     List<Entry> entryList = new ArrayList();
-
     {
         entryList.add(new Entry("Шевченко", "Тарас", "Григориевич", "+380631234567", "0441234567", "c. Моринцы, Черкасская область", "sheva@ukr.net"));
         entryList.add(new Entry("Шевчук", "Алекс", "Григориевич", "+380633336644", "", "", ""));
@@ -47,6 +47,14 @@ public class UserDaoImplFileTest {
         entryList.add(new Entry("Шевинский", "Александр", "Павлович", "+381214546581", "", "", ""));
     }
 
+    @After
+    public void deleteTestUser()
+    {
+        try {
+            userDao.delete(testUser);
+        }
+        catch (IllegalArgumentException ex) {}
+    }
 
     @Test
     public void testAddUser() throws Exception {
@@ -56,12 +64,12 @@ public class UserDaoImplFileTest {
         userDao.delete(testUser);
     }
 
-    @Test(expected = InvalidDataAccessApiUsageException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testAddUser_nullLogin() throws Exception {
         userDao.add(testUser_nullLogin);
     }
 
-    @Test(expected = InvalidDataAccessApiUsageException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testAddUser_duplicateUser() throws Exception {
         userDao.add(testUser);
         userDao.add(testUser);
@@ -90,13 +98,13 @@ public class UserDaoImplFileTest {
     }
 
     @Test
-    public void testSort() {
+    public void testSort()
+    {
         userDao.add(testUser);
-        for (Entry e : entryList) {
-            e.setOwner(testUser);
-            testUser.getEntries().add(e);
+        for (Entry e : entryList)
+        {
+            userDao.addEntry(testUser.getLogin(), e);
         }
-        entry.setOwner(testUser);
         testUser.getEntries().add(entry);
         Entry searchEntry = new Entry("Шев", "", "", "", "", "", "");
         List<Entry> entries = userDao.getSortedEntries(testUser.getLogin(), "firstName", "asc", searchEntry);
@@ -110,6 +118,81 @@ public class UserDaoImplFileTest {
         searchEntry = new Entry("Шев", "", "", "121", "", "", "");
         entries = userDao.getSortedEntries(testUser.getLogin(), "firstName", "desc", searchEntry);
         assertEquals(1, entries.size());
+        userDao.delete(testUser);
+    }
+
+    @Test
+    public void testAddEntry() throws Exception {
+
+        userDao.add(testUser);
+        int startCount = userDao.getEntriesCount(testUser.getLogin());
+        assertEquals(startCount, 0);
+
+        userDao.addEntry(testUser.getLogin(), entry);
+        assertEquals(userDao.getEntriesCount(testUser.getLogin()), startCount + 1);
+
+        Entry aEntry = userDao.getEntryByCellNumber(testUser.getLogin(), entry.getCellNumber());
+        assertNotNull(aEntry);
+
+        userDao.deleteEntry(testUser.getLogin(), aEntry);
+        assertEquals(userDao.getEntriesCount(testUser.getLogin()), 0);
+
+        userDao.delete(testUser);
+    }
+
+    @Test
+    public void testUpdateEntry() throws Exception {
+        userDao.add(testUser);
+
+        userDao.addEntry(testUser.getLogin(), entry);
+        Set<Entry> entries = userDao.getAllEntries(testUser.getLogin());
+        assertNotNull(entries);
+        assertTrue(entries.size() > 0);
+
+        Entry aEntry = userDao.getEntryByCellNumber(testUser.getLogin(), entry.getCellNumber());
+        aEntry.setFirstName("Петр");
+        userDao.updateEntry(testUser.getLogin(), aEntry);
+        Entry updatedEntry = userDao.getEntryByCellNumber(testUser.getLogin(), entry.getCellNumber());
+        assertNotNull(updatedEntry);
+        assertEquals(aEntry.getFirstName(), updatedEntry.getFirstName());
+        userDao.delete(testUser);
+    }
+
+    @Test
+    public void testDeleteEntry() throws Exception {
+        userDao.add(testUser);
+        userDao.addEntry(testUser.getLogin(), entry);
+        assertEquals(1, userDao.getEntriesCount(testUser.getLogin()));
+        userDao.deleteEntry(testUser.getLogin(), entry);
+        assertEquals(0, userDao.getEntriesCount(testUser.getLogin()));
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddEntry_Invalid1() throws Exception {
+        userDao.add(testUser);
+        Entry invalidEntry = new Entry("Ива", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        invalidEntry.setFirstName("123");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        invalidEntry.setFirstName(null);
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddEntry_Invalid2() throws Exception {
+        userDao.add(testUser);
+        Entry invalidEntry = new Entry("Иванов", "", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddEntry_Invalid3() throws Exception {
+        userDao.add(testUser);
+        Entry invalidEntry = new Entry("Иванов", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
         userDao.delete(testUser);
     }
 }

@@ -15,7 +15,7 @@ import java.util.*;
  * Created by sergey on 15.04.2016.
  */
 @Component
-public class UserDaoImplFile implements UserDao {
+public class UserDaoImplFile extends AbstractUserDao {
 
     @Autowired
     private FileDb fileDb;

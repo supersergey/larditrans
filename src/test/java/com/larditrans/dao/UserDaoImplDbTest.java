@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -108,6 +109,81 @@ public class UserDaoImplDbTest {
         searchEntry = new Entry("Шев", "", "", "121", "", "", "");
         entries = userDao.getSortedEntries(testUser.getLogin(), "firstName", "desc", searchEntry);
         assertEquals(1, entries.size());
+        userDao.delete(testUser);
+    }
+
+    @Test
+    public void testAddEntry() throws Exception {
+
+        userDao.add(testUser);
+        int startCount = userDao.getEntriesCount(testUser.getLogin());
+        assertEquals(startCount, 0);
+
+        userDao.addEntry(testUser.getLogin(), entry);
+        assertEquals(userDao.getEntriesCount(testUser.getLogin()), startCount + 1);
+
+        Entry aEntry = userDao.getEntryByCellNumber(testUser.getLogin(), entry.getCellNumber());
+        assertNotNull(aEntry);
+
+        userDao.deleteEntry(testUser.getLogin(), aEntry);
+        assertEquals(userDao.getEntriesCount(testUser.getLogin()), 0);
+
+        userDao.delete(testUser);
+    }
+
+    @Test
+    public void testUpdateEntry() throws Exception {
+        userDao.add(testUser);
+
+        userDao.addEntry(testUser.getLogin(), entry);
+        Set<Entry> entries = userDao.getAllEntries(testUser.getLogin());
+        assertNotNull(entries);
+        assertTrue(entries.size() > 0);
+
+        Entry aEntry = userDao.getEntryByCellNumber(testUser.getLogin(), entry.getCellNumber());
+        aEntry.setFirstName("Петр");
+        userDao.updateEntry(testUser.getLogin(), aEntry);
+        Entry updatedEntry = userDao.getEntryByCellNumber(testUser.getLogin(), entry.getCellNumber());
+        assertNotNull(updatedEntry);
+        assertEquals(aEntry.getFirstName(), updatedEntry.getFirstName());
+        userDao.delete(testUser);
+    }
+
+    @Test
+    public void testDeleteEntry() throws Exception {
+        userDao.add(testUser);
+        userDao.addEntry(testUser.getLogin(), entry);
+        assertEquals(1, userDao.getEntriesCount(testUser.getLogin()));
+        userDao.deleteEntry(testUser.getLogin(), entry);
+        assertEquals(0, userDao.getEntriesCount(testUser.getLogin()));
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testAddEntry_Invalid1() throws Exception {
+        userDao.add(testUser);
+        Entry invalidEntry = new Entry("Ива", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        invalidEntry.setFirstName("123");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        invalidEntry.setFirstName(null);
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testAddEntry_Invalid2() throws Exception {
+        userDao.add(testUser);
+        Entry invalidEntry = new Entry("Иванов", "", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testAddEntry_Invalid3() throws Exception {
+        userDao.add(testUser);
+        Entry invalidEntry = new Entry("Иванов", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov");
+        userDao.addEntry(testUser.getLogin(), invalidEntry);
         userDao.delete(testUser);
     }
 }

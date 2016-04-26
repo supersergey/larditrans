@@ -18,8 +18,9 @@ import java.util.List;
 /**
  * Created by sergey on 14.04.2016.
  */
+
 @Repository
-public class UserDaoImplDb implements UserDao {
+public class UserDaoImplDb extends AbstractUserDao {
 
     @PersistenceContext
     private EntityManager em;

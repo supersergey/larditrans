@@ -24,3 +24,4 @@ fabric.properties
 #Custom
 /filesdbdbdbd/
 /src/main/webapp/WEB-INF/pages/static/trirand/
+/donotinclude/

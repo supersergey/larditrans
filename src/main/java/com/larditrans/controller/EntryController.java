@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -98,16 +99,11 @@ public class EntryController {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
             String correctedCellNumber = cellNumber.replaceAll("\\.|\\(|\\)|\\s|-", "");
-            if (null == userService.getEntryByCellNumber(userLogin, cellNumber))
-            {
+            if (null == userService.getEntryByCellNumber(userLogin, cellNumber)) {
                 userService.addEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
                 response.setStatus(HttpServletResponse.SC_OK);
-            }
-            else
-            {
+            } else
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            }
-
         }
     }
 
@@ -125,13 +121,10 @@ public class EntryController {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
             String correctedCellNumber = cellNumber.replaceAll("\\.|\\(|\\)|\\s|-", "");
-            if (null == userService.getEntryByCellNumber(userLogin, cellNumber))
-            {
+            if (null == userService.getEntryByCellNumber(userLogin, cellNumber)) {
                 userService.updateEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
                 response.setStatus(HttpServletResponse.SC_OK);
-            }
-            else
-            {
+            } else {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
         }

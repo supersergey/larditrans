@@ -156,16 +156,16 @@ public class Entry {
                 !this.getLastName().matches("[A-Za-zа-яА-Я]{4,}"))
             return false;
         if (null == this.getFirstName() ||
-                !this.getLastName().matches("[A-Za-zа-яА-Я]{4,}"))
+                !this.getFirstName().matches("[A-Za-zа-яА-Я]{4,}"))
             return false;
         if (null == this.getPatronymic() ||
-                !this.getLastName().matches("[A-Za-zа-яА-Я]{4,}"))
+                !this.getPatronymic().matches("[A-Za-zа-яА-Я]{4,}"))
             return false;
         if (null != this.getEmail()) {
-            if (this.getEmail().isEmpty())
+            if (!this.getEmail().isEmpty())
+                if (!this.getEmail().matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$"))
                 return false;
-            else if (!this.getEmail().matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$"))
-                return false;
+        }
             if (null == this.getCellNumber() || this.getCellNumber().isEmpty())
                 return false;
             else {
@@ -173,7 +173,6 @@ public class Entry {
                 if (!cellNumber.matches("^\\+(?=[0-9]*$)(?:.{10}|.{12})$"))
                     return false;
             }
-        }
         return true;
     }
 }
