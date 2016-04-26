@@ -42,6 +42,8 @@ public class UserDaoImplFile implements UserDao {
 
         if (null == user || null == user.getLogin() || user.getLogin().isEmpty())
             throw new IllegalArgumentException("Empty user login is not allowed.");
+        if (null == getByLogin(user.getLogin()))
+            throw new IllegalArgumentException("Specified user does not exist. = " + user.getLogin());
         fileDb.deleteFile(user);
     }
 

@@ -1,7 +1,6 @@
 package com.larditrans.service;
 
 import com.larditrans.AppConfig;
-import com.larditrans.dao.EntryDao;
 import com.larditrans.dao.UserDao;
 import com.larditrans.model.Entry;
 import com.larditrans.model.User;
@@ -34,6 +33,11 @@ import java.util.Set;
 @WebAppConfiguration
 public class UserServiceTest {
 
+    static
+    {
+        System.setProperty("myproperty", "foo");
+    }
+
     @Autowired
     private DaoProviderService daoProviderService;
 
@@ -47,7 +51,7 @@ public class UserServiceTest {
         userDao = daoProviderService.provideUserDao();
     }
 
-    private User user = new User("test", "test", "test");
+    private User user = new User("testuser", "testuser", "Test Test");
     Entry entry = new Entry("Иванов", "Иван", "Иванович", "+380959998877", "+380441112233", "Ул. Крещатик", "ivanov@ivanov.com");
 
     @Before

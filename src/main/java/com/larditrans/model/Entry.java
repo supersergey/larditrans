@@ -170,7 +170,7 @@ public class Entry {
                 return false;
             else {
                 String cellNumber = this.getCellNumber().replaceAll("/(\\s|\\(|\\)|-|\\.|\\+)/g", "");
-                if (!cellNumber.matches("^(?=[0-9]*$)(?:.{10}|.{12})$"))
+                if (!cellNumber.matches("^\\+(?=[0-9]*$)(?:.{10}|.{12})$"))
                     return false;
             }
         }

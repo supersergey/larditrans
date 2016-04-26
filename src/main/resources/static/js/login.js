@@ -15,8 +15,6 @@ $(document).ready(
                             userLogin: userLogin,
                             password: password
                         }, function (token) {
-
-                            var url = 'viewdata.html';
                             localStorage.setItem('userLogin', userLogin);
                             localStorage.setItem('token', token);
                             window.location.replace("viewdata.html");

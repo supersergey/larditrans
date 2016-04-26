@@ -35,7 +35,7 @@ public class PersistenceJPAConfig{
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setPersistenceUnitName("LardiTransJPA");
+        em.setPersistenceUnitName("TestLardiTransJPA");
         return em;
     }
 

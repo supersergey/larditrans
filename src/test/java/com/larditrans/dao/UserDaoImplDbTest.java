@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,13 +27,26 @@ public class UserDaoImplDbTest {
     @Qualifier("userDaoImplDb")
     private UserDao userDao;
 
-    private User testUser = new User("test", "test", "Test Test");
+    private User testUser = new User("testuser", "testuser", "Test Test");
+    private User testUser_nullLogin = new User(null, "testuser", "Test Test");
 
     @Test
     public void testAdd() throws Exception {
         userDao.add(testUser);
         User aUser = userDao.getByLogin(testUser.getLogin());
         assertEquals(aUser, testUser);
+        userDao.delete(testUser);
+    }
+
+    @Test(expected = InvalidDataAccessApiUsageException.class)
+    public void testAdd_nullLogin() throws Exception {
+        userDao.add(testUser_nullLogin);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAdd_duplicateUser() throws Exception {
+        userDao.add(testUser);
+        userDao.add(testUser);
         userDao.delete(testUser);
     }
 

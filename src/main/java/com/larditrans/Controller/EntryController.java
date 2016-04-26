@@ -30,7 +30,7 @@ public class EntryController {
     @Qualifier("userDaoImplDb")
     private UserDao userDao;
 
-    private boolean isAuthorized(String userLogin, Integer token) {
+    private boolean isAuthorized(String userLogin, String token) {
         User user = userService.getUserByLogin(userLogin);
         if (null == user || !Tokenizer.getInstance().getToken(userLogin).equals(token))
             return false;
@@ -39,7 +39,7 @@ public class EntryController {
     }
 
     @RequestMapping(value = "/getEntries", method = RequestMethod.POST)
-    public String doGetEntries(@RequestParam String userLogin, @RequestParam Integer token,
+    public String doGetEntries(@RequestParam String userLogin, @RequestParam String token,
                                @RequestParam(name = "sidx", required = false) String columnName, // column to sort
                                @RequestParam(name = "sord", required = false) String sortOrder, // sort direction, desc or asc
                                @RequestParam(defaultValue = "0") Integer rows, // number of rows to display on paginator
@@ -65,8 +65,8 @@ public class EntryController {
             JsonResponse jsonResponse = new JsonResponse();
             jsonResponse.total = entries.size() / rows + 1;
             jsonResponse.records = entries.size();
-            if (rows < entries.size())
-            {   int startIndex = (page - 1) * rows;
+            if (rows < entries.size()) {
+                int startIndex = (page - 1) * rows;
                 int endIndex = page * rows;
                 if (endIndex > entries.size())
                     endIndex = entries.size();
@@ -85,7 +85,7 @@ public class EntryController {
     }
 
     @RequestMapping(value = "/addEntry", method = RequestMethod.POST)
-    public void doAddEntry(@RequestParam String userLogin, @RequestParam Integer token, HttpServletResponse response,
+    public void doAddEntry(@RequestParam String userLogin, @RequestParam String token, HttpServletResponse response,
                            @RequestParam String lastName,
                            @RequestParam String firstName,
                            @RequestParam String patronymic,
@@ -98,13 +98,21 @@ public class EntryController {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
             String correctedCellNumber = cellNumber.replaceAll("\\.|\\(|\\)|\\s|-", "");
-            userService.addEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
-            response.setStatus(HttpServletResponse.SC_OK);
+            if (null == userService.getEntryByCellNumber(userLogin, cellNumber))
+            {
+                userService.addEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
+            else
+            {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            }
+
         }
     }
 
     @RequestMapping(value = "/editEntry", method = RequestMethod.POST)
-    public void doEditEntry(@RequestParam String userLogin, @RequestParam Integer token, HttpServletResponse response,
+    public void doEditEntry(@RequestParam String userLogin, @RequestParam String token, HttpServletResponse response,
                             @RequestParam String lastName,
                             @RequestParam String firstName,
                             @RequestParam String patronymic,
@@ -117,13 +125,20 @@ public class EntryController {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
             String correctedCellNumber = cellNumber.replaceAll("\\.|\\(|\\)|\\s|-", "");
-            userService.updateEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
-            response.setStatus(HttpServletResponse.SC_OK);
+            if (null == userService.getEntryByCellNumber(userLogin, cellNumber))
+            {
+                userService.updateEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
+                response.setStatus(HttpServletResponse.SC_OK);
+            }
+            else
+            {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            }
         }
     }
 
     @RequestMapping(value = "/deleteEntry", method = RequestMethod.POST)
-    public void doDeleteEntry(@RequestParam String userLogin, @RequestParam Integer token, HttpServletResponse response, @RequestParam(name = "id") String cellNumber) {
+    public void doDeleteEntry(@RequestParam String userLogin, @RequestParam String token, HttpServletResponse response, @RequestParam(name = "id") String cellNumber) {
         if (!isAuthorized(userLogin, token))
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
@@ -134,7 +149,7 @@ public class EntryController {
     }
 
     @RequestMapping(value = "/autoComplete", method = RequestMethod.POST)
-    public String doSearch(@RequestParam String userLogin, @RequestParam Integer token,
+    public String doSearch(@RequestParam String userLogin, @RequestParam String token,
                            @RequestParam String columnName, @RequestParam String term,
                            HttpServletResponse response) {
         if (!isAuthorized(userLogin, token))
@@ -144,13 +159,13 @@ public class EntryController {
             if (null == autoCompleteResult || autoCompleteResult.isEmpty())
                 return null;
             else {
-                    AutoCompleteResult[] rows = (AutoCompleteResult[]) autoCompleteResult.toArray(new AutoCompleteResult[0]);
-                    Gson gson = new GsonBuilder().create();
-                    String result = gson.toJson(rows);
+                AutoCompleteResult[] rows = (AutoCompleteResult[]) autoCompleteResult.toArray(new AutoCompleteResult[0]);
+                Gson gson = new GsonBuilder().create();
+                String result = gson.toJson(rows);
                 response.setStatus(HttpServletResponse.SC_OK);
-                    return result;
-                }
+                return result;
             }
+        }
         return null;
     }
 
@@ -161,5 +176,3 @@ public class EntryController {
         List<Entry> rows;
     }
 }
-
-

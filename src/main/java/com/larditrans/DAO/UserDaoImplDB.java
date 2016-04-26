@@ -27,6 +27,15 @@ public class UserDaoImplDb implements UserDao {
     @Override
     @Transactional
     public User add(User user) {
+        if (null == user)
+            throw new IllegalArgumentException("Empty user login is not allowed.");
+
+        if (null == user.getLogin() || user.getLogin().isEmpty())
+            throw new IllegalArgumentException("Empty user login is not allowed.");
+
+        if (null != getByLogin(user.getLogin()))
+            throw new IllegalArgumentException("User with the specified login already exists. = " + user.getLogin());
+
         em.persist(user);
         return user;
     }
@@ -73,7 +82,7 @@ public class UserDaoImplDb implements UserDao {
     public List<AutoCompleteResult> autoComplete(String login, String columnName, String term) {
         columnName = columnName.substring(0, 1).toLowerCase() + columnName.substring(1);
         User user = getByLogin(login);
-        String q = "SELECT NEW com.larditrans.model.AutoCompleteResult(e.cellNumber, e." + columnName + ") FROM Entry e where e." + columnName + " LIKE :term and e.owner = :user";
+        String q = "SELECT NEW com.larditrans.service.AutoCompleteResult(e.cellNumber, e." + columnName + ") FROM Entry e where e." + columnName + " LIKE :term and e.owner = :user";
         TypedQuery<AutoCompleteResult> query = em.createQuery(q, AutoCompleteResult.class);
         query.setParameter("term", "%" + term + "%");
         query.setParameter("user", user);

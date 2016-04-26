@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -23,11 +24,13 @@ import static org.junit.Assert.assertNull;
 @WebAppConfiguration
 public class UserDaoImplFileTest {
 
-    private User testUser = new User("test", "test", "Test Test");
+    private User testUser = new User("testuser", "testuser", "Test Test");
 
     @Autowired
     @Qualifier("userDaoImplFile")
     private UserDao userDao;
+
+    private User testUser_nullLogin = new User(null, "testuser", "Test Test");
 
     @Test
     public void testAdd() throws Exception {
@@ -35,6 +38,11 @@ public class UserDaoImplFileTest {
         User aUser = userDao.getByLogin(testUser.getLogin());
         assertEquals(aUser, testUser);
         userDao.delete(testUser);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAdd_nullLogin() throws Exception {
+        userDao.add(testUser_nullLogin);
     }
 
     @Test
@@ -47,10 +55,13 @@ public class UserDaoImplFileTest {
         userDao.delete(testUser);
     }
 
-    @Test(expected = IllegalArgumentException.class)
     public void testAdd_UserAlreadyExist() throws Exception {
         userDao.add(testUser);
-        userDao.add(testUser);
+        try
+        {
+            userDao.add(testUser);
+        }
+        catch (IllegalArgumentException ex) {}
         userDao.delete(testUser);
     }
 

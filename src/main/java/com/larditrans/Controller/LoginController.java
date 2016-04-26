@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Created by sergey on 19.04.2016.
  */
+
+/* This controller implements user registration, login and logout */
+
 @RestController
 public class LoginController {
 
@@ -22,9 +25,9 @@ public class LoginController {
     private UserService userService;
 
     @RequestMapping(value = "/authorize", method = RequestMethod.POST)
-    public Integer doLogin(@RequestParam String userLogin, @RequestParam String password, HttpServletResponse response) {
+    public String doLogin(@RequestParam String userLogin, @RequestParam String password, HttpServletResponse response) {
 
-        Integer token = 0;
+        String token = "";
         User user = userService.getUserByLogin(userLogin);
         if (null == user)
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -45,5 +48,16 @@ public class LoginController {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         userService.addUser(user);
         response.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public void logout (@RequestParam String userLogin, @RequestParam String token, HttpServletResponse response) {
+        User user = userService.getUserByLogin(userLogin);
+        if (null == user || !Tokenizer.getInstance().getToken(userLogin).equals(token))
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        else {
+            Tokenizer.getInstance().remove(userLogin);
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
     }
 }

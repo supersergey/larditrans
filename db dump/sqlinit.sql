@@ -28,6 +28,7 @@ CREATE INDEX foreign_index ON entry (owner_id);
 CREATE UNIQUE INDEX unique_id ON user (id);
 CREATE UNIQUE INDEX unique_login ON user (login);
 
+DROP TABLE IF EXISTS hibernate_sequences;
 CREATE TABLE hibernate_sequences (
   sequence_name varchar(255) NOT NULL,
   next_val bigint(20) DEFAULT NULL,
