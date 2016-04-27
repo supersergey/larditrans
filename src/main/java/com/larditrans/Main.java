@@ -22,7 +22,6 @@ public class Main {
             for (String p : properties.stringPropertyNames())
             {
                 System.setProperty(p, properties.getProperty(p));
-                System.out.println(p + " = " + properties.getProperty(p));
             }
         } catch (IOException ex) {
             throw new IllegalArgumentException("Configuration file is invalid. Run mvn -Dlardi.conf=<conf.file> to start application. Starting application with src/main/resources/application.properties settings.");

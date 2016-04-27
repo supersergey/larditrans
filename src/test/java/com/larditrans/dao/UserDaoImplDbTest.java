@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
 @WebAppConfiguration
 public class UserDaoImplDbTest {
 
-    @Autowired
+    @Autowired(required = false)
     @Qualifier("userDaoImplDb")
     private UserDao userDao;
 
