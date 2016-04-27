@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 @ComponentScan("com.larditrans")
 public class PersistenceJPAConfig {
     @Value("${filedb.enabled}")
-    private Boolean isFileDbEnabled = false;
+    private Boolean isFileDbEnabled;
     @Value("${javax.persistence.jdbc.url}")
     private String dbUrl;
     @Value("${javax.persistence.jdbc.user}}")
