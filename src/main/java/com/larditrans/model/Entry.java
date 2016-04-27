@@ -164,15 +164,15 @@ public class Entry {
         if (null != this.getEmail()) {
             if (!this.getEmail().isEmpty())
                 if (!this.getEmail().matches("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$"))
+                    return false;
+        }
+        if (null == this.getCellNumber() || this.getCellNumber().isEmpty())
+            return false;
+        else {
+            String cellNumber = this.getCellNumber().replaceAll("/(\\s|\\(|\\)|-|\\.|\\+)/g", "");
+            if (!cellNumber.matches("^\\+(?=[0-9]*$)(?:.{10}|.{12})$"))
                 return false;
         }
-            if (null == this.getCellNumber() || this.getCellNumber().isEmpty())
-                return false;
-            else {
-                String cellNumber = this.getCellNumber().replaceAll("/(\\s|\\(|\\)|-|\\.|\\+)/g", "");
-                if (!cellNumber.matches("^\\+(?=[0-9]*$)(?:.{10}|.{12})$"))
-                    return false;
-            }
         return true;
     }
 }

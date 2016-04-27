@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sergey on 14.04.2016.
@@ -99,7 +100,7 @@ public class UserDaoImplDb extends AbstractUserDao {
         Session session = em.unwrap(Session.class);
         Criteria criteria = session.createCriteria(Entry.class);
 
-
+        criteria.add(Restrictions.eq("owner", user));
         if (searchEntry.getLastName() != null)
             criteria.add(Restrictions.like("lastName", "%"+ searchEntry.getLastName()+"%"));
         if (searchEntry.getFirstName() != null)
@@ -125,4 +126,82 @@ public class UserDaoImplDb extends AbstractUserDao {
             }
         return criteria.list();
     }
+
+    @Transactional
+    public User addEntry(String userLogin, Entry entry) {
+        if (userLogin == null || userLogin.equals("")) {
+            throw new IllegalArgumentException("Empty user login is not allowed.");
+        }
+        if (entry == null) {
+            throw new IllegalArgumentException("Empty entry is not allowed.");
+        }
+
+        if (!entry.isValid())
+            throw new IllegalArgumentException("Entry fields are not valid.");
+
+        User currentUser = getByLogin(userLogin);
+
+        if (currentUser == null) {
+            throw new IllegalArgumentException("User is not found for the specified login = " + userLogin);
+        }
+
+        entry.setOwner(currentUser);
+        currentUser.getEntries().add(entry);
+
+        update(currentUser);
+
+        return currentUser;
+    }
+
+    @Transactional
+    public Entry updateEntry(String userLogin, Entry newEntry) {
+        if (userLogin == null || userLogin.equals("")) {
+            throw new IllegalArgumentException("Empty user login is not allowed.");
+        }
+        if (newEntry == null) {
+            throw new IllegalArgumentException("Empty entry is not allowed.");
+        }
+
+        if (!newEntry.isValid())
+            throw new IllegalArgumentException("Entry fields are not valid.");
+
+        User currentUser = getByLogin(userLogin);
+
+        if (currentUser == null) {
+            throw new IllegalArgumentException("User is not found for the specified login = " + userLogin);
+        }
+
+        Set<Entry> entries = currentUser.getEntries();
+        Entry changeEntry = null;
+
+        if (null == entries)
+            throw new IllegalArgumentException("The user has no entries. Nothing to update.");
+
+        for (Entry e : entries)
+            if (e.getCellNumber().equals(newEntry.getCellNumber())) {
+                changeEntry = e;
+                break;
+            }
+        currentUser.getEntries().remove(changeEntry);
+        newEntry.setOwner(currentUser);
+        currentUser.getEntries().add(newEntry);
+        update(currentUser);
+        return newEntry;
+    }
+
+    @Transactional
+    public void deleteEntry(String userLogin, Entry entry) {
+        User currentUser = getByLogin(userLogin);
+
+        Entry entryToDelete = getEntryByCellNumber(userLogin, entry.getCellNumber());
+
+        if (null == entryToDelete)
+            throw new IllegalArgumentException("User is not found for the specified login = " + userLogin);
+
+        if (!currentUser.getEntries().contains(entryToDelete))
+            throw new IllegalArgumentException("Entry is not found." + userLogin);
+        currentUser.getEntries().remove(entryToDelete);
+        update(currentUser);
+    }
+
 }

@@ -31,7 +31,7 @@ public class User {
     private String fullName;
 
     @Expose
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<Entry> entries = new LinkedHashSet<>();
 
     public long getId() {
