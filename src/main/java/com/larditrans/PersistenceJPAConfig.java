@@ -20,13 +20,17 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan("com.larditrans")
-public class PersistenceJPAConfig{
+public class PersistenceJPAConfig {
+    @Value("${filedb.enabled}")
+    private Boolean isFileDbEnabled = false;
     @Value("${javax.persistence.jdbc.url}")
     private String dbUrl;
     @Value("${javax.persistence.jdbc.user}}")
     private String dbUser;
     @Value("${javax.persistence.jdbc.password}")
     private String dbPassword;
+    @Value("${javax.persistence.name}")
+    private String persistenceName;
 
     public PersistenceJPAConfig() {
         super();
@@ -35,29 +39,34 @@ public class PersistenceJPAConfig{
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setPersistenceUnitName("TestLardiTransJPA");
+        if (!isFileDbEnabled)
+            em.setPersistenceUnitName(persistenceName);
+        else
+            em.setPersistenceUnitName("FileDb");
         return em;
     }
 
     @Bean
     public DataSource dataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
-
-        dataSource.setUrl(dbUrl);
-        dataSource.setUsername(dbUser);
-        dataSource.setPassword(dbPassword);
+        if (!isFileDbEnabled)
+        {
+            dataSource.setUrl(dbUrl);
+            dataSource.setUsername(dbUser);
+            dataSource.setPassword(dbPassword);
+        }
         return dataSource;
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf){
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
     }
 
     @Bean
-    public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 }

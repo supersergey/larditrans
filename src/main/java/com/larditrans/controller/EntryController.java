@@ -57,8 +57,6 @@ public class EntryController {
         if (!isAuthorized(userLogin, token))
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
-//            int startIndex = (page - 1) * rows;
-//            int endIndex = page * rows;
             Entry searchEntry = new Entry(lastName, firstName, patronymic, cellNumber, phoneNumber, address, email);
             List<Entry> entries = userService.getSortedEntries(userLogin, columnName, sortOrder,
                     searchEntry);
@@ -121,12 +119,9 @@ public class EntryController {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         else {
             String correctedCellNumber = cellNumber.replaceAll("\\.|\\(|\\)|\\s|-", "");
-            if (null == userService.getEntryByCellNumber(userLogin, cellNumber)) {
-                userService.updateEntry(userLogin, new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email));
+            Entry newEntry = new Entry(lastName, firstName, patronymic, correctedCellNumber, phoneNumber, address, email);
+                userService.updateEntry(userLogin, newEntry);
                 response.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            }
         }
     }
 

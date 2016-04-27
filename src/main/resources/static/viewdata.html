@@ -298,12 +298,18 @@
                     cloneToTop: false
                 },
                 {
+                    beforeShowForm: function (form) {
+                        $('#cellNumber', form).attr("disabled", true);
+                    },
                     editData: {userLogin: userLogin, token: token},
                     closeAfterAdd: true,
                     closeAfterEdit: true,
                     url: '/editEntry'
                 },
                 {
+                    beforeShowForm: function (form) {
+                        $('#cellNumber', form).attr("enabled", true);
+                    },
                     editData: {userLogin: userLogin, token: token},
                     closeAfterAdd: true,
                     closeAfterEdit: true,
@@ -330,6 +336,9 @@
                     width: 620,
                     closeAfterAdd: true,
                     recreateForm: true,
+                    beforeShowForm: function (form) {
+                        $('#cellNumber', form).attr("disabled", false);
+                    },
                     errorTextFormat: function (data) {
                         return 'Error: ' + data.responseText
                     }
@@ -339,7 +348,8 @@
                     errorTextFormat: function (data) {
                         return 'Error: ' + data.responseText
                     }
-                });
+                }
+        )
     });
 </script>
 
