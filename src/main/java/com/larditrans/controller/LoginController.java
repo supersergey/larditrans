@@ -42,12 +42,14 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
-    public void doRegister(@RequestParam String userLogin, @RequestParam String password, @RequestParam String fullName, HttpServletResponse response) {
+    public String doRegister(@RequestParam String userLogin, @RequestParam String password, @RequestParam String fullName, HttpServletResponse response) {
         User user = new User(userLogin, password, fullName);
-        if (userService.getUserByLogin(userLogin) != null)
+        if (null == userLogin || userLogin.length() < 5 || null == fullName || fullName.length() < 5 ||
+                userService.getUserByLogin(userLogin) != null)
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         userService.addUser(user);
         response.setStatus(HttpServletResponse.SC_OK);
+        return "Неправильные регистрационные данные.";
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
